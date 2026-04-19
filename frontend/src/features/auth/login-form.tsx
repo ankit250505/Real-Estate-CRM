@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
@@ -15,6 +16,7 @@ type LoginValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -35,7 +37,13 @@ export function LoginForm() {
         <p className="mt-2 text-sm text-slate-500">Manage leads, listings, deals, and agent performance from one place.</p>
       </div>
 
-      <form className="mt-8 space-y-4" onSubmit={handleSubmit(login)}>
+      <form
+        className="mt-8 space-y-4"
+        onSubmit={handleSubmit(async (values) => {
+          await login(values);
+          navigate("/", { replace: true });
+        })}
+      >
         <div>
           <Input placeholder="Email" {...register("email")} />
           {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
